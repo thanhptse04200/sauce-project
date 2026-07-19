@@ -18,6 +18,8 @@ public class DriverFactory {
 
     public static void setDriver(String browser) {
         WebDriver driver;
+        boolean headless = ConfigReader.getBoolean("headless")
+                || "true".equalsIgnoreCase(System.getenv("CI"));
         if (browser == null || browser.isBlank()) {
             browser = ConfigReader.get("browser");
         }
@@ -25,7 +27,9 @@ public class DriverFactory {
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
-                firefoxOptions.addArguments("--headless");
+                if (headless) {
+                    firefoxOptions.addArguments("--headless=new");
+                }
                 firefoxOptions.addArguments("--width=1920");
                 firefoxOptions.addArguments("--height=1080");
                 driver = new FirefoxDriver(firefoxOptions);
@@ -34,7 +38,9 @@ public class DriverFactory {
             default:
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chromeOptions = new ChromeOptions();
-//                chromeOptions.addArguments("--headless=new");
+                if (headless) {
+                    chromeOptions.addArguments("--headless=new");
+                }
                 chromeOptions.addArguments("--window-size=1920,1080");
                 chromeOptions.addArguments("--no-sandbox");
                 chromeOptions.addArguments("--disable-dev-shm-usage");
@@ -42,7 +48,6 @@ public class DriverFactory {
                 break;
         }
 
-        driver.manage().window().maximize();
         driverThreadLocal.set(driver);
     }
 
