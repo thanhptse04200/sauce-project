@@ -2,7 +2,9 @@ name: Selenium Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
 
@@ -14,36 +16,41 @@ jobs:
       CI: true
 
     steps:
-
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
-          cache: maven
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
 
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 'stable'
 
       - name: Install Firefox
         uses: browser-actions/setup-firefox@v1
+        with:
+          firefox-version: 'latest'
 
-      - name: Run Selenium Tests
-        run: mvn clean test
+      - name: Run tests
+        run: mvn clean test -DsuiteXmlFile=testng.xml
 
-      - name: Upload Screenshots
+      - name: Upload test screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: failure-screenshots
-          path: target/screenshots
+          path: target/screenshots/
+          retention-days: 7
 
-      - name: Upload Surefire Report
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-report
-          path: target/surefire-reports
+          name: test-results
+          path: target/surefire-reports/
+          retention-days: 7
