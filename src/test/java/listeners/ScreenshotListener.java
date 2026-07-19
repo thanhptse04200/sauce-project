@@ -27,27 +27,23 @@ public class ScreenshotListener implements ITestListener {
         }
 
         try {
-            // Create screenshots directory
             Path dir = Paths.get(SCREENSHOT_DIR);
             if (!Files.exists(dir)) {
                 Files.createDirectories(dir);
             }
 
-            // Take screenshot
             File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 
-            // Generate filename with timestamp
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String testName = result.getTestClass().getRealClass().getSimpleName() + "_" + result.getName();
             String fileName = testName + "_" + timestamp + ".png";
 
-            // Copy to target directory
             Path destination = Paths.get(SCREENSHOT_DIR, fileName);
             Files.copy(screenshot.toPath(), destination);
 
-            System.out.println("[SCREENSHOT] Saved: " + destination.toAbsolutePath());
+            System.out.println("Screenshot: " + destination.toAbsolutePath());
         } catch (IOException e) {
-            System.err.println("[SCREENSHOT] Failed to capture screenshot: " + e.getMessage());
+            System.err.println(e.getMessage());
         }
     }
 

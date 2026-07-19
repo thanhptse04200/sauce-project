@@ -8,6 +8,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import utils.ConfigReader;
 
+import java.util.Map;
+
 public class DriverFactory {
 
     private static final ThreadLocal<WebDriver> driverThreadLocal = new ThreadLocal<>();

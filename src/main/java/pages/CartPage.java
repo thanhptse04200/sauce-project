@@ -1,40 +1,29 @@
 package pages;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import java.util.List;
-
 import base.BasePage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 
 public class CartPage extends BasePage {
 
-    @FindBy(className = "cart_item")
-    private List<WebElement> cartItems;
-
-    @FindBy(id = "checkout")
-    private WebElement checkoutButton;
-
-    @FindBy(id = "continue-shopping")
-    private WebElement continueShoppingButton;
+    private final By cartItems = By.className("cart_item");
+    private final By checkoutButton = By.id("checkout");
 
     public CartPage(WebDriver driver) {
         super(driver);
     }
 
     public int getCartItemCount() {
-        return cartItems.size();
+        return findAll(cartItems).size();
     }
 
     public void clickCheckout() {
-        click(checkoutButton);
+        jsClick(checkoutButton);
+        waitForUrlContains("checkout-step-one");
     }
 
     public boolean isOnCartPage() {
-        return driver.getCurrentUrl().contains("cart.html");
+        return getCurrentUrl().contains("cart");
     }
 
-    public void continueShopping() {
-        click(continueShoppingButton);
-    }
 }

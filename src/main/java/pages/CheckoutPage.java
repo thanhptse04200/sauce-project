@@ -1,41 +1,19 @@
 package pages;
 
 import base.BasePage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
 
 public class CheckoutPage extends BasePage {
 
-
-    @FindBy(id = "first-name")
-    private WebElement firstNameInput;
-
-    @FindBy(id = "last-name")
-    private WebElement lastNameInput;
-
-    @FindBy(id = "postal-code")
-    private WebElement postalCodeInput;
-
-    @FindBy(id = "continue")
-    private WebElement continueButton;
-
-    @FindBy(className = "summary_total_label")
-    private WebElement totalLabel;
-
-    @FindBy(id = "finish")
-    private WebElement finishButton;
-
-    @FindBy(className = "complete-header")
-    private WebElement completeHeader;
-
-    @FindBy(id = "back-to-products")
-    private WebElement backToProductsButton;
+    private final By firstNameInput = By.id("first-name");
+    private final By lastNameInput = By.id("last-name");
+    private final By postalCodeInput = By.id("postal-code");
+    private final By continueButton = By.id("continue");
+    private final By totalLabel = By.className("summary_total_label");
+    private final By finishButton = By.id("finish");
+    private final By completeHeader = By.className("complete-header");
+    private final By backToProductsButton = By.id("back-to-products");
 
     public CheckoutPage(WebDriver driver) {
         super(driver);
@@ -50,6 +28,7 @@ public class CheckoutPage extends BasePage {
 
     public void clickContinue() {
         click(continueButton);
+        waitForUrlContains("checkout-step-two");
     }
 
     public String getTotalPrice() {
@@ -58,20 +37,14 @@ public class CheckoutPage extends BasePage {
 
     public void clickFinish() {
         click(finishButton);
+        waitForUrlContains("checkout-complete");
     }
 
     public String getCompleteHeader() {
         return getText(completeHeader);
     }
 
-    public void backToProducts() {
-        click(backToProductsButton);
-    }
     public boolean isOrderComplete() {
-        try {
-            return getCompleteHeader().contains("Thank you for your order");
-        } catch (Exception e) {
-            return false;
-        }
+        return getCompleteHeader().contains("Thank you for your order");
     }
 }

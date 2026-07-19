@@ -1,71 +1,53 @@
 package pages;
 
 import base.BasePage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import java.util.List;
 
 public class InventoryPage extends BasePage {
 
-    @FindBy(className = "title")
-    private WebElement pageTitle;
-
-    @FindBy(className = "inventory_item")
-    private List<WebElement> inventoryItems;
-
-    @FindBy(className = "shopping_cart_link")
-    private WebElement cartLink;
-
-    @FindBy(className = "shopping_cart_badge")
-    private WebElement cartBadge;
-
-    @FindBy(id = "react-burger-menu-btn")
-    private WebElement menuButton;
-
-    @FindBy(id = "logout_sidebar_link")
-    private WebElement logoutLink;
+    private final By inventoryItems = By.className("inventory_item");
+    private final By cartLink = By.className("shopping_cart_link");
+    private final By cartBadge = By.className("shopping_cart_badge");
+    private final By menuButton = By.id("react-burger-menu-btn");
+    private final By logoutLink = By.id("logout_sidebar_link");
+    private static final By ITEM_NAME = By.className("inventory_item_name");
+    private static final By ADD_BUTTON = By.cssSelector("button[id^='add-to-cart']");
 
     public InventoryPage(WebDriver driver) {
         super(driver);
     }
 
     public boolean isOnInventoryPage() {
-        return waitForUrlContains("inventory");
+        return getCurrentUrl().contains("inventory");
     }
 
-    public String getPageTitle() {
-        return getText(pageTitle);
-    }
+    public void addItemToCart(String productName) {
 
-    public int getInventoryItemCount() {
-        return inventoryItems.size();
-    }
-
-    public void addItemToCartByIndex(int index) {
-        WebElement item = inventoryItems.get(index);
-        WebElement addButton = item.findElement(
-                org.openqa.selenium.By.cssSelector("button[id^='add-to-cart']"));
-        click(addButton);
+        for (WebElement item : findAll(inventoryItems)) {
+            String currentName = item.findElement(ITEM_NAME).getText();
+            if (currentName.equals(productName)) {
+                item.findElement(ADD_BUTTON).click();
+                return;
+            }
+        }
+        throw new IllegalArgumentException(
+                "Cannot find product: " + productName
+        );
     }
 
     public void goToCart() {
         click(cartLink);
+        waitForUrlContains("cart");
+
     }
 
     public int getCartBadgeCount() {
-        try {
-            return Integer.parseInt(cartBadge.getText());
-        } catch (Exception e) {
+        if (!isDisplayed(cartBadge)) {
             return 0;
         }
+        return Integer.parseInt(getText(cartBadge));
     }
 
-    public void logout() {
-        click(menuButton);
-        waitUntilVisible(logoutLink);
-        click(logoutLink);
-    }
 }
